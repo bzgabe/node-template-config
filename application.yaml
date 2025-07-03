@@ -1,22 +1,36 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: Rollout
 metadata:
   name: myapp-argo-application
-  namespace: argocd
+  namespace: demo
 spec:
-  project: default
-  source:
-    repoURL: https://aurora.bizzonedns.com/git/gubgabriel/node-template-config.git
-    targetRevision: HEAD
-    path: dev
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nodeapp
-
-  syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
-
-    automated:
-      selfHeal: true 
-      prune: true
+  replicas: 3
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: api
+#  template:
+#    metadata:
+#      labels:
+#        app: nginx
+    spec:
+      containers:
+      - name: node-image
+        image: bzgabriel/gabd:node-microservice            # first (stable) version
+        ports:
+        - containerPort: 3000
+  strategy:
+    canary:
+      # NEW — required for SMI
+      stableService: api-service-stable
+      canaryService: api-service-canary
+      trafficRouting:
+        smi:
+          rootService: myapp-argo-application           # apex service
+          trafficSplitName: myapp-argo-application-smi  # name of the TrafficSplit CR
+      steps:
+      - setWeight: 20
+      - pause: {duration: 30s}
+      - setWeight: 50
+      - pause: {duration: 30s}
+      - setWeight: 100
