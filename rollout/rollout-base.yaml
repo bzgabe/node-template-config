@@ -35,7 +35,7 @@ spec:
         - name: regcred
       containers:
         - name: node-image
-          image: bzgabriel/gabd:node-microservice            # first (stable) version
+          image: bzgabriel/gabd:node-microservice-fastify-0.1            # first (stable) version
           ports:
             - containerPort: 3000
   strategy:

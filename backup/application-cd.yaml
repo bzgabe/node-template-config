@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: https://aurora.bizzonedns.com/git/gubgabriel/node-template-config.git
     targetRevision: HEAD
-    path: dev
+    path: rollout
   destination:
     server: https://kubernetes.default.svc
-    namespace: nodeapp
+    namespace: demo
 
   syncPolicy:
     syncOptions:
